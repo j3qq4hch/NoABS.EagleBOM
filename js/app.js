@@ -85,6 +85,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // URL input field
+  const urlInput = document.getElementById('url-input');
+  document.getElementById('btn-load-url').addEventListener('click', () => loadFromUrl(urlInput.value.trim()));
+  urlInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') loadFromUrl(urlInput.value.trim()); });
+
+  // Auto-load from ?url= GET parameter
+  const params = new URLSearchParams(window.location.search);
+  const paramUrl = params.get('url');
+  if (paramUrl) loadFromUrl(paramUrl);
+
   // Undo: Ctrl+Z / Cmd+Z — skip when user is editing inside an input
   document.addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
@@ -130,26 +140,44 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+// ── Load from URL ─────────────────────────────────────────────────────────────
+async function loadFromUrl(url) {
+  if (!url) return;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+    const text = await res.text();
+    const fileName = new URL(url).pathname.split('/').pop() || 'schematic.sch';
+    processSchematicText(text, fileName);
+  } catch (err) {
+    alert('Failed to load URL:\n' + err.message);
+  }
+}
+
 // ── Load & parse file ─────────────────────────────────────────────────────────
 function loadFile(file) {
   const reader = new FileReader();
-  reader.onload = (e) => {
-    try {
-      const { components, variantDefs, hasModuleVariants } = parseSchematic(e.target.result);
-      const { groups, attrNames } = buildBom(components);
-      currentGroups            = groups;
-      currentAttrNames         = attrNames;
-      currentFileName          = file.name;
-      currentVariantDefs       = variantDefs;
-      currentHasModuleVariants = hasModuleVariants;
-      showBom(file.name, components.length, groups.length);
-    } catch (err) {
-      alert('Failed to parse file:\n' + err.message);
-      console.error(err);
-    }
-  };
+  reader.onload  = (e) => processSchematicText(e.target.result, file.name);
   reader.onerror = () => alert('Could not read file.');
   reader.readAsText(file, 'utf-8');
+}
+
+function processSchematicText(text, fileName) {
+  try {
+    const { components, variantDefs, hasModuleVariants } = parseSchematic(text);
+    const { groups, attrNames } = buildBom(components);
+    currentGroups            = groups;
+    currentAttrNames         = attrNames;
+    currentFileName          = fileName;
+    currentVariantDefs       = variantDefs;
+    currentHasModuleVariants = hasModuleVariants;
+    _undoStack.length        = 0;
+    _syncUndoBtn();
+    showBom(fileName, components.length, groups.length);
+  } catch (err) {
+    alert('Failed to parse file:\n' + err.message);
+    console.error(err);
+  }
 }
 
 // ── Add attribute column modal ────────────────────────────────────────────────

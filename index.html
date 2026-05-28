@@ -18,6 +18,11 @@
       <p>Drop <strong>.sch</strong> file here</p>
       <label class="browse-btn" for="file-input">Browse</label>
       <input type="file" id="file-input" accept=".sch">
+      <div class="url-row">
+        <input type="url" id="url-input" placeholder="…or paste a URL to a .sch file">
+        <button id="btn-load-url">Load</button>
+      </div>
+      <p class="url-hint">Use raw file URLs (e.g. raw.githubusercontent.com)</p>
     </div>
 
     <div id="bom-section" class="hidden">
@@ -124,7 +129,7 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="js/xlsx.full.min.js"></script>
   <script src="js/parser.js"></script>
   <script src="js/bom.js"></script>
   <script src="js/table.js"></script>
