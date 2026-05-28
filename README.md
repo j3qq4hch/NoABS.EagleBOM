@@ -2,6 +2,8 @@
 
 A browser-based BOM manager for Autodesk Eagle schematics. No install, no server, no bullshit.
 
+Access tool [HERE](https://noabs-eagle.github.io/EagleBOM/).
+
 Open a `.sch` file, edit your BOM, export back to Eagle.
 
 ## What it does
@@ -23,7 +25,7 @@ Drop a `.sch` file onto the page, or paste a raw file URL.
 
 To open a specific schematic directly:
 ```
-https://yourname.github.io/NoABS.EagleBOM/?url=https://raw.githubusercontent.com/user/repo/main/board.sch
+https://noabs-eagle.github.io/EagleBOM/index.html?url=https://raw.githubusercontent.com/j3qq4hch/kotleta/refs/heads/master/KOTLETA.sch
 ```
 
 ## Deploy
